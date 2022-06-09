@@ -12,11 +12,12 @@ class Schedule extends React.Component{
         for(let i in Data){
             depart.push(i);
         }
-        //console.log(depart);
+        //console.log(this.props.depart);
+        //console.log(this.props.data);
         return (
             <>
             {
-                <Descriptions labelStyle={{'width':'10%','textAlign':'center'}} className='table1' size='small' bordered={true} title={''} column={1}>
+                <Descriptions style={{ width: '82.5%'}} labelStyle={{'width':'10%','textAlign':'center'}} className='table1' size='small' bordered={true} title={''} column={1}>
                     {
                         depart.map(Item=>{
                             return (

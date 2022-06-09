@@ -13,11 +13,11 @@ function PayModal(props) {
   }, [props])
 
   function handlePayModalOK() {
-    api.get_registration_pay(props.orderId)
+    api.get_registration_pay(props.orderId, props.doctorId, props.time)
     .then(r => {
       if(r.data.pay === "pay_success") {
         let desc = '预约医生: ' + String(props.doctorMap.get(props.doctorId) ? props.doctorMap.get(props.doctorId).name : "") + '\n' +
-                          '预约时间: ' +  props.time + ':00-' + String(Number(props.time) + 1) + ':00' + '\n' +
+                          '预约时间: ' +  props.timeInterval[props.time] + '\n' +
                           '请及时就诊！'
         // message.success('支付成功！')
         notification['success']({
@@ -39,7 +39,8 @@ function PayModal(props) {
   function handlePayModalRevoke() {
     api.order_revoke(props.orderId, cookie.load("user_id"))
     .then(r => {
-      if(r.state === 'success') {
+      console.log(r)
+      if(r.data.status === 'success') {
         message.info('预约已取消！')
       }
     })
@@ -51,7 +52,7 @@ function PayModal(props) {
     if(props.visible === true) {
       api.order_revoke(props.orderId, cookie.load("user_id"))
       .then(r => {
-        if(r.state === 'TRADE_FINISHED') {
+        if(r.data.status === 'success') {
           message.info('支付超时，预约已取消！')
         }
       })
@@ -73,7 +74,7 @@ function PayModal(props) {
         destroyOnClose='true'
       >
         <p>预约医生: {props.doctorMap.get(props.doctorId) ? props.doctorMap.get(props.doctorId).name : ""}</p>
-        <p>预约时间: {props.time}:00-{Number(props.time) + 1}:00</p>
+        <p>预约时间: {props.timeInterval[props.time]}</p>
         <Countdown
           style={{marginLeft: '170px'}}
           title='支付时间'

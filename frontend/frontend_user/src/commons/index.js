@@ -18,9 +18,10 @@ export default {
       })
     },
 
-    async get_doctor_select(doctorId) {
+    async get_doctor_select(doctorId, date) {
       return await http.get('/api/user/registration/select', {
-        doctorId: doctorId
+        doctorId: doctorId,
+        date: date
       })
     },
 
@@ -32,9 +33,11 @@ export default {
       })
     },
 
-    async get_registration_pay(order_id) {
+    async get_registration_pay(order_id, doctor_id, quota) {
       return await http.get('/api/user/registration/pay', {
         order_id: order_id,
+        doctor_id, doctor_id,
+        quota: quota
       })
     },
     async order_revoke(order_id,user_id) {

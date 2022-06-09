@@ -8,7 +8,7 @@ export default {
         },cookie.load("token"))
     },
     async set_userinfo(user_id,gender,age,hereditary,pastill,height,weight) {
-        return await http.post('/api/user/set_info', {
+        return await http.post('/api/user/info/setinfo', {
             user_id:user_id,
             gender:gender,
             age:age,
@@ -24,9 +24,21 @@ export default {
         })
     },
     async get_avatar(user_id) {
-        return await http.get('/api/user/getavatar', {
+        return await http.get('/api/user/info/getavatar', {
             user_id:user_id,
-        },cookie.load("token"))
+        })
+    },
+    async set_avatar(user_id,pic_id) {
+        return await http.post('/api/user/info/setavatar', {
+            user_id:user_id,
+            pic_id:pic_id
+        })
+    },
+    async avatar(user_id,pic_id) {
+        return await http.get('/api/user/info/avatar', {
+            user_id:user_id,
+            pic_id:pic_id
+        })
     },
     async collect_doctor_list(user_id) {
         return await http.get('/api/user/doctor/collectlist', {
@@ -49,6 +61,20 @@ export default {
         return await http.post('/api/user/info/setemail', {
             user_id:user_id,
             email:email
+        })
+    },
+    async set_healthinfo(user_id,general,bloodoxygen,sleep,heartrate) {
+        return await http.post('/api/user/health/sethealthinfo', {
+            user_id:user_id,
+            general:general,
+            bloodoxygen:bloodoxygen,
+            sleep:sleep,
+            heartrate:heartrate
+        })
+    },
+    async get_healthinfo(user_id) {
+        return await http.get('/api/user/health/gethealthinfo', {
+            user_id:user_id
         })
     },
 }

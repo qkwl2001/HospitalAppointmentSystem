@@ -15,10 +15,10 @@ class Department extends React.Component {
         this.state = {
             num:1,
             num1:1,
-            name:'呼吸内科',
-            data:{"name":"1"},
+            name:'',
+            d:require('./data/big_depart_json.json'),
+            data:1,
             data1:{
-                "name":"",
                 "intro":"",
                 "doctor_list":["","",""],
                 "schedule":{
@@ -30,33 +30,47 @@ class Department extends React.Component {
                     "周六":{},
                     "周日":{},
                 }
-            }
+            },
+            span:0,
+            count:1
         };
     }
 
     //require('./data/departstruct.json')
 
-    componentDidMount(){
+    componentDidMount(){       
         api.getdepartstruct().then(r=>{
+            console.log(r.data.data);
             this.setState(
                 {
-                    data:r.data.data
+                    name:'口腔内科',
+                    data:r.data.data,
                 }
             );
         });
-        api.postdepartinfo("呼吸内科").then(r=>{
+        
+        api.getdepartinfo("口腔内科").then(r=>{
             this.setState(
                 {
                     data1:r.data.data,
-                    name:'呼吸内科'
+                    count:2,
+                    name:"口腔内科",
+                    data2:this.state.data1,
+                    span:1,
                 }
             );
         });
+        
     }
     
  
     changeshow(name){
-        let depart_struct=this.state.data;
+        this.setState(
+            {
+                span:0
+            }
+        );
+        let depart_struct=this.state.d;
         let depart_general_name = [];
         for(let i in depart_struct){
             depart_general_name.push(i);
@@ -64,7 +78,7 @@ class Department extends React.Component {
         let l = 0;
         for(let i in depart_struct){
             l = l+1;
-            if(i === name){
+            if(i == name){
                 break;
             }
         } 
@@ -72,27 +86,37 @@ class Department extends React.Component {
             {
                 num:l,
                 num1:1,
+                name:depart_struct[depart_general_name[l-1]][0],
             }
         );
         //console.log(depart_struct[depart_general_name[l-1]]);
+        /*
         let depart_detail_name = [];
         for(let i in depart_struct[depart_general_name[l-1]]){
             depart_detail_name.push(i);
             //console.log(i);
         }
-        api.postdepartinfo(depart_detail_name[0]).then(r=>{
+        */
+        let depart_detail_name = depart_struct[depart_general_name[l-1]];
+        api.getdepartinfo(depart_detail_name[0]).then(r=>{
             this.setState(
                 {
                     data1:r.data.data,
-                    name:depart_detail_name[0]
+                    count:2,
+                    span:1
                 }
             );
         });
     }
 
     changeshow1(name){
+        this.setState(
+            {
+                span:0
+            }
+        );
         let depart_general_name = [];
-        let depart_struct=this.state.data;
+        let depart_struct=this.state.d;
         for(let i in depart_struct){
             depart_general_name.push(i);
         }
@@ -100,7 +124,7 @@ class Department extends React.Component {
         let l = 0;
         for(let i in Data){
             l = l+1;
-            if(i === name){
+            if(Data[i] === name){
                 break;
             }
         } 
@@ -110,10 +134,12 @@ class Department extends React.Component {
                 name:name
             }
         );
-        api.postdepartinfo(name).then(r=>{
+        api.getdepartinfo(name).then(r=>{
             this.setState(
                 {
-                    data1:r.data.data
+                    data1:r.data.data,
+                    count:2,
+                    span:1
                 }
             );
         });
@@ -126,19 +152,21 @@ class Department extends React.Component {
             //console.log(2);
         });
         */
+        //console.log(this.state.data1);
         let depart_general_name = [];
-        //console.log(1);
-        let depart_struct=this.state.data;
+        let depart_struct=this.state.d;
         for(let i in depart_struct){
             depart_general_name.push(i);
         }
-
+        //console.log(depart_general_name);
         let Data = depart_struct[depart_general_name[this.state.num-1]];
+        let a = this.state.data;
+        /*
         let depart_name = [];
         for(let i in Data){
             depart_name.push(i);
         }
-
+        */
         //console.log(this.state.num);
         //console.log(depart_name[this.state.num1-1]);
 
@@ -149,10 +177,10 @@ class Department extends React.Component {
                     <Segmented className='seg' size="middle" key={depart_general_name[0]} options={depart_general_name} defaultValue={depart_general_name[0]} onChange={value=>this.changeshow(value)}/>
                 </Row>
                 */}
-                <Row style={{'margin':'0cm 0cm 0cm 4cm'}}>
+                <Row style={{'margin':'0cm 0cm 0cm 2cm'}}>
                     <Tabs defaultActiveKey={depart_general_name[0]} onChange={value=>this.changeshow(value)}>{
                         depart_general_name.map(Item=>{
-                            return <TabPane tab={<div className='top'>{Item}</div>} key={Item}></TabPane>
+                            return <TabPane tab={<div className='top'>{Item}</div>} key={Item} disabled={(this.state.count === 1)?true:false}></TabPane>
                         })
                     }
                     </Tabs>
@@ -164,10 +192,10 @@ class Department extends React.Component {
                     <Segmented className='seg' size="middle" key={depart_name[0]} options={depart_name} defaultValue={depart_name[0]} onChange={value=>this.changeshow1(value)}/>
                 </Row>
                 */}
-                <Row style={{'margin':'0cm 0cm 0cm 4cm'}}>
-                    <Tabs defaultActiveKey={depart_name[0]} activeKey={depart_name[this.state.num1-1]} onChange={value=>this.changeshow1(value)}>{
-                        depart_name.map(Item=>{
-                            return <TabPane tab={<div className='mid'>{Item}</div>} key={Item}></TabPane>
+                <Row style={{'margin':'0cm 0cm 0cm 2cm'}}>
+                    <Tabs defaultActiveKey={Data[0]} activeKey={Data[this.state.num1-1]} onChange={value=>this.changeshow1(value)}>{
+                        Data.map(Item=>{
+                            return <TabPane tab={<div className='mid'>{Item}</div>} key={Item} disabled={(this.state.count === 1)?true:false}></TabPane>
                         })
                     }
                     </Tabs>
@@ -175,7 +203,7 @@ class Department extends React.Component {
 
 
                 <p></p>
-                <Infotype name={this.state.name} data1={this.state.data1} data={depart_struct[depart_general_name[this.state.num-1]][depart_name[this.state.num1-1]]} depart={depart_name[this.state.num1-1]}></Infotype>
+                <Infotype isspan={this.state.span} isshow={(this.state.data === 1)?true:false} name={this.state.name} data1={this.state.data1} data={a[Data[this.state.num1-1]]} depart={Data[this.state.num1-1]}></Infotype>
             </div>
         )
 

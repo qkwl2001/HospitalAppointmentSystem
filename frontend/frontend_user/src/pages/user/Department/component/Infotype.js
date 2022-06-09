@@ -80,9 +80,6 @@ class Infotype extends React.Component{
         );
     }
 
-    changeshow1(name){
-        console.log(name);
-    }
 
 
 
@@ -90,7 +87,7 @@ class Infotype extends React.Component{
         let people = this.props.data;
         let department_detailinfo = this.props.data1;
 
-        //console.log(this.props.depart);
+        //console.log(this.props.isshow);
 
         //console.log(this.state.type);
 
@@ -101,22 +98,22 @@ class Infotype extends React.Component{
                     <Segmented className='seg' size="middle" options={['简介','人员','时间表']} onChange={value=>this.changeshow(value)}/>
                 </Row>
                 */}
-                <Row style={{'margin':'0cm 0cm 0cm 4cm'}}>
+                <Row style={{'margin':'0cm 0cm 0cm 2cm'}}>
                 <Tabs className='down' defaultActiveKey="1" onChange={value=>this.changeshow(value)}>
-                    <TabPane tab="简介" key="简介">
+                    <TabPane tab="简介" key="简介" >
                      
                     </TabPane>
-                    <TabPane tab="人员" key="人员">
+                    <TabPane tab="人员" key="人员" disabled={this.props.isshow}>
                       
                     </TabPane>
-                    <TabPane tab="时间表" key="时间表">
+                    <TabPane tab="时间表" key="时间表" >
                       
                     </TabPane>
                 </Tabs>
                 </Row>
                 <p></p>
                 <Row  justify='center'>
-                    <Showtype name={this.props.name} personinfo={people} departmentinfo={department_detailinfo} showtype={this.state.type}></Showtype>
+                    {<Showtype isspan={this.props.isspan} name={this.props.name} personinfo={people} departmentinfo={department_detailinfo} showtype={this.state.type}></Showtype>}
                 </Row>
             </div>
         )

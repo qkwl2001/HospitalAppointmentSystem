@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { TreeSelect, Modal, Button, Space, Radio, message } from 'antd';
+import { TreeSelect, Modal, Button, Space, Radio, message, Spin } from 'antd';
 // 由于 antd 组件的默认文案是英文，所以需要修改为中文
 import zhCN from 'antd/lib/locale/zh_CN';
 import moment from 'moment';
@@ -33,10 +33,13 @@ class Registration extends React.Component {
     // cookie.save('user_id', 'u1234')
     // cookie.save('username', 'lyczju')
     this.setState({userId: cookie.load('user_id')})
-    let date = moment().format('d')
+    // let date = moment().format('d')
+    // let date = new Date('2022-06-06T03:35:43.860Z')
+    let date = new Date()
     api.get_doctor_info(date)
     .then(r => {
       console.log("get doctor info");
+      console.log(r.data.data.doctorData, r.data.data.treeData)
       this.setState(
         {
           doctorData: r.data.data.doctorData,
@@ -54,7 +57,8 @@ class Registration extends React.Component {
             {name: r.data.data.doctorData[i].name,
               department: r.data.data.doctorData[i].department,
               major: r.data.data.doctorData[i].major,
-              info: r.data.data.doctorData[i].info
+              info: r.data.data.doctorData[i].info,
+              photo:r.data.data.doctorData[i].photo
             })
       }
       //循环完之后一下子赋值改state的map
@@ -70,7 +74,7 @@ class Registration extends React.Component {
   };
 
   showSearchModal = () => {
-    if(this.state.doctorId === "            ") {
+    if(this.state.doctorId === "            " || !this.state.doctorMap.has(this.state.doctorId)) {
       message.error("请选择医生！");
     }
     else {
@@ -91,7 +95,7 @@ class Registration extends React.Component {
         <Space direction='vertical' size='middle'>
           <div>
             <TreeSelect
-              style={{ width: '80%' }}
+              style={{ width: '1000px' }}
               value={this.state.doctorId}
               dropdownStyle={{ maxHeight: 600, overflow: 'auto' }}
               treeData={this.state.treeData}
@@ -103,11 +107,14 @@ class Registration extends React.Component {
               查询
             </Button>
           </div>
+
           <Radio.Group defaultValue='0' buttonStyle='outline' onChange={this.chooseOnChange}>
             <Space size={[20, 20]} wrap>
-              {this.state.doctorData.map((item, index) => {
+              {this.state.doctorData.length === 0 ?
+              <Spin size='large' style={{marginLeft: '500px', marginTop: '200px'}} /> :
+              this.state.doctorData.map((item, index) => {
                 return (
-                  <Radio.Button value={item.doctorId} style={{width: '300px', height: '300px'}}><span><img src={img1} alt='img1' style={{width: '100px', height: '100px', marginLeft: '90px', marginTop: '10px'}} /><br/>姓名: {item.name}<br/>科室: {item.department}<br/>主治症状: {item.major}<br/>个人简介: {item.info}</span></Radio.Button>
+                  <Radio.Button value={item.doctorId} style={{width: '300px', height: '300px'}}><span><img src={item.photo?item.photo:img1} alt='img1' style={{width: '100px', height: '100px', marginLeft: '90px', marginTop: '10px'}} /><br/>姓名: {item.name}<br/>科室: {item.department}<br/>主治症状: {item.major}<br/>个人简介: {item.info.length > 51 ? item.info.slice(0, 51) : item.info}</span></Radio.Button>
                 )
               })}
             </Space>

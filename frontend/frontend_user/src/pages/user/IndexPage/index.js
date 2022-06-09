@@ -19,6 +19,7 @@ import user_action_api from "./../../../commons/components/indexPage"
 import user_info_api from "./../../../commons/components/userinfo"
 import './index.css'
 import cookie from 'react-cookies'
+import { Skeleton } from 'antd';
 
 import {Route, Switch} from "react-router-dom";
 // import News1 from './component/News1'
@@ -118,16 +119,28 @@ class IndexPage extends Component {
                 })
             }
         )
+        user_info_api.get_healthinfo(user_id).then(
+            ret=>{
+                console.log("ret",ret)
+                if(ret.data.status==='success'){
+                    this.setState({
+                        healthInfo_1:ret.data.data.health.total,
+                        healthInfo_2:ret.data.data.health.pulse_oximeter,
+                        healthInfo_3:ret.data.data.health.sleep_quality,
+                        healthInfo_4:ret.data.data.health.heart_rate,
+                    })
+                }
+
+            }
+        )
     }
 
     state = {
         dataSource: [],
-        healthInfo:[
-            {total:"12.2",change_rate:10},
-            {pulse_oximeter:"95.3%",change_rate:5},
-            {sleep_quality:"10.2",change_rate:10},
-            {heart_rate:"100.1",change_rate:-5}
-        ],
+        healthInfo_1:{value:0,rate:0},
+        healthInfo_2:{value:0,rate:0},
+        healthInfo_3:{value:0,rate:0},
+        healthInfo_4:{value:0,rate:0},
         userAction:[
             {timestamp:"2022-03-04 08:09",description:"修改绑定邮箱"},
             {timestamp:"2022-04-01 16:03",description:"挂号：外科 李明医生"},
@@ -135,25 +148,27 @@ class IndexPage extends Component {
             {timestamp:"2022-04-03 23:01",description:"订单缴费成功"}
         ],
         userInfoTotal:{},
-        user_avatar_src:"https://joeschmoe.io/api/v1/random",
+        user_avatar_src:"",
         user_name:"User001"
 
     }
 
     updateAction = () =>{
-        user_action_api.post_useraction("123")
-        .then( ret =>{
-            console.log("debug",ret.data.data)
-            console.log("action",this.state.userAction)
-            this.setState({userAction:ret.data.data
-            })
-        })
-        user_action_api.post_userhealthinfo("123")
-        .then( ret =>{
-            this.setState({
-                healthInfo:ret.data.data
-            })
-        })
+        // user_action_api.post_useraction("123")
+        // .then( ret =>{
+        //     console.log("debug",ret.data.data)
+        //     console.log("action",this.state.userAction)
+        //     this.setState({userAction:ret.data.data
+        //     })
+        // })
+        // user_action_api.post_userhealthinfo("123")
+        // .then( ret =>{
+        //     this.setState({
+        //         healthInfo:ret.data.data
+
+        //     })
+        //     console.log("info",ret.data.data)
+        // })
     }
     openNewWindow = (src) =>{
         console.log("src",src)
@@ -224,37 +239,54 @@ class IndexPage extends Component {
                                 <Col span={3}>
                                 <Row>
                                     <a href='/index/userinfo'>
-                                        <Avatar size={128} icon={<UserOutlined />} src={this.state.user_avatar_src} className='avatar-type'/>
+                                        <Avatar size={140} icon={<UserOutlined />} src={this.state.user_avatar_src} className='avatar-type'/>
                                     </a>
                                 </Row>
-                                <Row className='welcome-info'>
-                                    <p >Welcome, {this.state.user_name}!</p>
-                                </Row>
+
                                 </Col>
-                                <Col span={7} offset={0}>
-                                    <Timeline >
-                                        <Timeline.Item>
-                                        {this.state.userAction[0].timestamp} {this.state.userAction[0].description}
-                                        </Timeline.Item>
-                                        <Timeline.Item>
-                                        {this.state.userAction[1].timestamp} {this.state.userAction[1].description}
-                                        </Timeline.Item>
-                                        <Timeline.Item>
-                                        {this.state.userAction[2].timestamp} {this.state.userAction[2].description}
-                                        </Timeline.Item>
-                                        <Timeline.Item>
-                                        {this.state.userAction[3].timestamp} {this.state.userAction[3].description}
-                                        </Timeline.Item>
-                                    </Timeline>
+                                <Col span={6} offset={1}>
+                                    {/*<Row className='welcome-info'>*/}
+                                    <Row>
+                                        <h2>Welcome!</h2>
+                                        <p></p>
+
+                                    </Row>
+                                    <Row>
+                                        <h1> {this.state.user_name}</h1>
+                                    </Row>
+                                    {/*<Timeline >*/}
+                                    {/*    <Timeline.Item>*/}
+                                    {/*    {this.state.userAction[0].timestamp} {this.state.userAction[0].description}*/}
+                                    {/*    </Timeline.Item>*/}
+                                    {/*    <Timeline.Item>*/}
+                                    {/*    {this.state.userAction[1].timestamp} {this.state.userAction[1].description}*/}
+                                    {/*    </Timeline.Item>*/}
+                                    {/*    <Timeline.Item>*/}
+                                    {/*    {this.state.userAction[2].timestamp} {this.state.userAction[2].description}*/}
+                                    {/*    </Timeline.Item>*/}
+                                    {/*    <Timeline.Item>*/}
+                                    {/*    {this.state.userAction[3].timestamp} {this.state.userAction[3].description}*/}
+                                    {/*    </Timeline.Item>*/}
+                                    {/*</Timeline>*/}
+
+
                                 </Col>
                                 <Col span={6}>
                                     <Card>
                                         <Statistic
+                                            style={{display:'inline-block'}}
                                             title="健康指数"
-                                            value={this.state.healthInfo[0].total}
+                                            value={this.state.healthInfo_1.value == this.state.healthInfo_1.rate?
+                                            0:
+                                            this.state.healthInfo_1.rate>=0?
+                                            (this.state.healthInfo_1.rate/(this.state.healthInfo_1.value-this.state.healthInfo_1.rate)*100):
+                                            (this.state.healthInfo_1.rate/(this.state.healthInfo_1.value-this.state.healthInfo_1.rate)*-100)}
                                             precision={2}
-                                            valueStyle={{ color: '#3f8600' }}
-                                            prefix={<ArrowUpOutlined />}
+                                            valueStyle={
+                                                this.state.healthInfo_1.rate>=0?
+                                                    { color: '#cf1322',fontSize:30 }
+                                                    :{ color: '#3f8600',fontSize:30 }}
+                                            prefix={this.state.healthInfo_1.rate>=0?<ArrowUpOutlined />:<ArrowDownOutlined />}
                                             suffix="%"
                                         />
                                     </Card>
@@ -263,10 +295,15 @@ class IndexPage extends Component {
                                     <Card>
                                         <Statistic
                                             title="睡眠警告"
-                                            value={this.state.healthInfo[2].sleep_quality}
+                                            value={this.state.healthInfo_3.value == this.state.healthInfo_3.rate?
+                                            0:
+                                            this.state.healthInfo_3.rate>=0?
+                                            (this.state.healthInfo_3.rate/(this.state.healthInfo_3.value-this.state.healthInfo_3.rate)*100):
+                                            (this.state.healthInfo_3.rate/(this.state.healthInfo_3.value-this.state.healthInfo_3.rate)*-100)}
                                             precision={2}
-                                            valueStyle={{ color: '#cf1322' }}
-                                            prefix={<ArrowDownOutlined />}
+                                            valueStyle={this.state.healthInfo_3.rate>=0?{ color: '#cf1322',fontSize:30 }:
+                                                { color: '#3f8600',fontSize:30 }}
+                                            prefix={this.state.healthInfo_3.rate>=0?<ArrowUpOutlined />:<ArrowDownOutlined />}
                                             suffix="%"
                                         />
                                     </Card>
@@ -274,16 +311,16 @@ class IndexPage extends Component {
                                 <Col span={2}>
                                     <Row>
                                         <Popover content={(<div>
-                                            <p>综合 {this.state.healthInfo[0].total}</p>
-                                            <p>血氧 {this.state.healthInfo[1].pulse_oximeter}</p>
-                                            <p>睡眠 {this.state.healthInfo[2].sleep_quality}</p>
-                                            <p>心率 {this.state.healthInfo[3].heart_rate}</p>
+                                            <p>综合 {this.state.healthInfo_1.value}</p>
+                                            <p>血氧 {this.state.healthInfo_2.value}</p>
+                                            <p>睡眠 {this.state.healthInfo_3.value}</p>
+                                            <p>心率 {this.state.healthInfo_4.value}</p>
                                             </div>)} title="所有指标">
                                             <Button type="primary" style={{marginBottom:30}}>其他</Button>
                                         </Popover>
                                     </Row>
                                     <Row>
-                                        <Button type="primary" onClick={this.updateAction} >更新</Button>
+                                        <Button type="primary"  ><a href='/index/userinfo'>更新</a></Button>
                                     </Row>
 
                                     {/*<Popover content={content} title="Title">*/}
@@ -297,6 +334,7 @@ class IndexPage extends Component {
 
 
                 </div>
+                <p> </p>
                 <ProList
                     //     toolBarRender={() => {
                     //     return [
@@ -337,6 +375,7 @@ class IndexPage extends Component {
             </div>
         );
     }
+
 }
 
 export default IndexPage;

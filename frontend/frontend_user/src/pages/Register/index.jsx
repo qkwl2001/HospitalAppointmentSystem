@@ -38,10 +38,10 @@ class Register extends Component {
     //实时发送ajax请求验证用户名是否可用
     handleUsername = e => {
         const username = e.target.value
-        const reg = /[0-9A-Za-z]{6,12}$/
+        const reg = /[\u4e00-\u9fa50-9A-Za-z]{6,12}$/
         //判断格式
         if (username.length < 6 || !reg.test(username)) {
-            this.setState({nameStyle:'warning', nameHelp:'用户名应为6-12个英文字符或数字'})
+            this.setState({nameStyle:'warning', nameHelp:'用户名应为6-12个中文，英文字符或数字'})
             return
         }
         //设置加载中样式
@@ -127,7 +127,7 @@ class Register extends Component {
     handleSubmit = () => {
         let that = this
         const {username, password, phone} = that.state
-        const reg1 = /[0-9A-Za-z]{6,12}$/
+        const reg1 = /[\u4e00-\u9fa50-9A-Za-z]{6,12}/
         const reg2 = /^1[3456789]\d{9}$/
         const reg3 = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/
         //判断提交数据格式的合法性
@@ -145,10 +145,11 @@ class Register extends Component {
         login_api.register(username,password,phone)
             .then(function (response) {
                 const data = response.data
-                const result = data.data.status
+                const result = data.status
 
                 if (result === 'success'){
                     //注册成功返回登陆界面
+                    message.success('注册成功！',2)
                     cookie.save('registerSuccess', true, { path: '/' })
                     window.location.href = '/login'
                 }
@@ -226,13 +227,13 @@ class Register extends Component {
                                         message: '请输入您的密码',
                                     },
                                     {
-                                        min: 6,
-                                        max: 24,
+                                        min: 8,
+                                        max: 16,
                                         message: '密码长度应为8-16个字符',
                                         trigger: 'blur'
                                     },
                                     {
-                                        pattern:/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/,
+                                        pattern:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{0,100}$/,
                                         message: '密码应包含数字和字母'
                                     }
                                 ]}

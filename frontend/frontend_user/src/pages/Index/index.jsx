@@ -1,5 +1,5 @@
 import React, {Component, useState} from 'react';
-import {Typography, Breadcrumb, Button, Layout, Menu, message, Avatar, Dropdown, Space} from 'antd'
+import {Typography, Breadcrumb, Button, Layout, Menu, message, Avatar, Dropdown, Space, AutoComplete} from 'antd'
 
 import Footer from "../../components/Footer";
 import LeftMenu from "../../components/LeftMenu";
@@ -19,6 +19,8 @@ import Notice from "./../user/Notice"
 import Registration from "./../user/Registration"
 import IndexPage from "./../user/IndexPage"
 import Icon, {UserOutlined, BellOutlined} from "@ant-design/icons";
+import src from 'react-map-gl';
+
 
 // import {MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined} from "@ant-design/icons";
 
@@ -31,8 +33,8 @@ const items1 = ['1', '2', '3'].map((key) => ({
   }));
 export default class Index extends Component {
 
-    state = {currentPage:"", username:cookie.load('username'), ws:null,collapsed:false,
-    
+    state = {currentPage:"", username:cookie.load('username'), ws:null,collapsed:false,avatarsrc:'',
+
     notice:[{title:"aa",content:"bb"},{title:"aa",content:"bb"}],
     callnotice:0}
 
@@ -50,22 +52,31 @@ export default class Index extends Component {
             }
         )
         console.log("notice:",that.state.notice)
+        userinfo_api.get_avatar(user_id).then(
+            function(response){
+                that.setState({avatarsrc:response.data.data.url})
+            }
+        )
     }
 
     Notice = () => {
         const user_id = cookie.load('user_id');
-        return (
-            <>
+        if (this.state.notice.length == 0) {
+            return (<div className='notice'><div style={{backgroundColor:'white', padding:'10px', border:'1px solid'}}>暂无系统通知</div></div>)
+        }
+        else return (
+            <div className='notice'>
             {
-                this.state.notice.map(Item=>{
-                    return (<div style={{padding:10,backgroundColor:'white'}}>
+                this.state.notice.map((Item,index)=>{
+                    return (<div className='EachNotice'>
                         <h6>{Item.title}</h6>
                         <p>{Item.content}</p>
+                        <p>{Item.announcer}{" "}{Item.date}</p>
                     </div>
                     )
                 })
             }
-            </>
+            </div>
         )
     }
 
@@ -108,7 +119,7 @@ export default class Index extends Component {
                     {/*</div>*/}
                     <div style={{position:'absolute',right:'10%',color:'white'}}>
                         <span style={{paddingRight: '10px'}}>
-                          <Avatar size="large" icon={<UserOutlined />} />
+                          <Avatar size="large" icon={<UserOutlined /> } src={this.state.avatarsrc}/>
                             &nbsp;{cookie.load('username')}
                         </span>
 
@@ -117,11 +128,11 @@ export default class Index extends Component {
                     </div>
                     <div className="logo" >
 
-                        <div style={{position:"absolute",width:130,top:0,left:40,height:10,fontSize:17}}>
-                            <img src={logo} alt={logo} width={18} />医疗诊断系统</div>
+                        <div style={{position:"absolute",width:200,top:0,left:40,height:10,fontSize:17}}>
+                            <img src={logo} alt={logo} width={18} />&nbsp;&nbsp;&nbsp;老和山智能医疗平台</div>
                     </div>
                     <div style={{position:"absolute",width:130,top:10,right:200,height:20,}} >
-                    <Dropdown overlay={this.Notice}   >
+                    <Dropdown overlay={this.Notice} >
                         <a onClick={(e) => e.preventDefault()}>
                         <Space>
                             <BellOutlined style={{color:"white",fontSize:25}}/>

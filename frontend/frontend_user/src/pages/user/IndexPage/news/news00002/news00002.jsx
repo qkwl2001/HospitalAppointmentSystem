@@ -4,15 +4,24 @@ import { render } from 'react-dom';
 import { Statistic, Card,Row, Col } from 'antd';
 import { Image } from 'antd';
 import '../news.css'
+import NewsHead from '../newsHead'
+
 const { Title, Paragraph, Text, Link } = Typography;
 
 
 class News00002 extends React.Component{
   render()  {return ( <div>
+    <NewsHead/>
+    <Divider/>
   <Typography className='text-type'>
     <Row>
       <Col span={15} offset={2}>
       <Title>第二党支部召开2020年度党员领导干部民主生活会</Title>
+      </Col>
+    </Row>
+    <Row className='author-type'>
+      <Col >
+      <p >部门：行政部&nbsp;&nbsp;&nbsp;&nbsp; 日期：2022-06-07 &nbsp;&nbsp;&nbsp;&nbsp; 点击次数：21 &nbsp;&nbsp;&nbsp;&nbsp;</p>
       </Col>
     </Row>
     <Row>
